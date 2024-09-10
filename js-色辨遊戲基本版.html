@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>色辨遊戲基本版</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      border-radius: 10px;
+    }
+
+    #container {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #F06060;
+    }
+
+    #cube-box {
+      width: 500px;
+      height: 500px;
+      background-color: #ddd;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      cursor: pointer;
+    }
+
+    .box {
+      width: 230px;
+      height: 230px;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <section id="container">
+    <div id="cube-box"></div>
+  </section>
+
+  <script>
+    const cubeBox = document.querySelector('#cube-box');
+    let times = 0; // 初始化答對次數
+    createCube();
+
+    function createCube() {
+      const randomIndex = Math.floor(Math.random() * 4) + 1;
+      const r = Math.floor(Math.random() * 200) + 1;
+      const g = Math.floor(Math.random() * 200) + 1;
+      const b = Math.floor(Math.random() * 200) + 1;
+      const baseColor = `rgb(${r}, ${g}, ${b})`;
+      const lightColor = `rgba(${r}, ${g}, ${b}, 80%)`;
+      let content = '';
+      for (let i = 1; i <= 4; i++) {
+        if (i === randomIndex) {
+          content += `<div class="box light-color" style="background-color:${lightColor}"></div>`;
+        } else {
+          content += `<div class="box" style="background-color:${baseColor}"></div>`;
+        }
+      }
+      cubeBox.innerHTML = content;
+      bindAnswerEvent();
+    }
+
+    function bindAnswerEvent() {
+      const lightColor = document.querySelector('.light-color');
+      lightColor.addEventListener('click', function () {
+        times++; // 每次答對次數都加一
+        if (times === 8) { // 答對八次跳出警告並重置次數
+          alert('恭喜過關了！');
+          times = 0;
+          createCube();
+        } else {
+          createCube();
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

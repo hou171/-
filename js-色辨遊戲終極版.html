@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>色辨遊戲終極版</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      border-radius: 10px;
+    }
+
+    #container {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #F06060;
+      position: relative;
+    }
+
+    #cube-box {
+      width: 500px;
+      height: 500px;
+      background-color: #ddd;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      cursor: pointer;
+      justify-content: space-around;
+      align-content: space-around;
+    }
+
+    .score {
+      width: 150px;
+      height: 50px;
+      background-color: #ddd;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      font-size: 120%;
+      font-weight: bold;
+      border: 2px solid black;
+    }
+
+    .time {
+      width: 150px;
+      height: 50px;
+      background-color: #ddd;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      font-size: 120%;
+      font-weight: bold;
+      border: 2px solid black;
+    }
+
+    .pause-btn {
+      width: 150px;
+      height: 50px;
+      background-color: #ddd;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      font-size: 120%;
+      font-weight: bold;
+      border: 2px solid black;
+      cursor: pointer;
+      z-index: 9;
+    }
+
+    #pause-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      z-index: 8;
+    }
+
+    .no-click {
+      pointer-events: none;
+    }
+
+    p {
+      font-size: 150%;
+    }
+
+    .box-2x2 {
+      width: calc((100% - 20px) / 2);
+      height: calc((100% - 20px) / 2);
+    }
+
+    .box-3x3 {
+      width: calc((100% - 20px) / 3);
+      height: calc((100% - 20px) / 3);
+    }
+
+    .box-4x4 {
+      width: calc((100% - 20px) / 4);
+      height: calc((100% - 20px) / 4);
+    }
+
+    .box-5x5 {
+      width: calc((100% - 20px) / 5);
+      height: calc((100% - 20px) / 5);
+    }
+
+    .box-6x6 {
+      width: calc((100% - 20px) / 6);
+      height: calc((100% - 20px) / 6);
+    }
+
+    .box-7x7 {
+      width: calc((100% - 20px) / 7);
+      height: calc((100% - 20px) / 7);
+    }
+
+    .box-8x8 {
+      width: calc((100% - 20px) / 8);
+      height: calc((100% - 20px) / 8);
+    }
+  </style>
+</head>
+
+<body>
+  <section id="container">
+    <div class="score">
+      <h3> 得分：</h3>
+      <p class="score-value"> 0 </p>
+    </div>
+    <div id="cube-box"></div>
+    <div class="time">
+      <p class="time-value"> 60 </p>
+    </div>
+    <div class="pause-btn">
+      <p class="pause-value"> PAUSE </p>
+    </div>
+    <div id="pause-screen">
+      <h2>遊戲已暫停</h2>
+      <p>點擊"RESUME"繼續遊戲</p>
+    </div>
+  </section>
+
+  <script>
+    const cubeBox = document.querySelector('#cube-box');
+    const scoreValue = document.querySelector('.score-value');
+    const timeValue = document.querySelector('.time-value');
+    let score = 0;
+    let count = 2;
+    let timing = 60;
+    let opacity = 0.6;
+
+    let isPaused = false;
+    let timerInterval = setInterval(time, 1000);
+
+    createCube();
+    togglePause();
+
+    function createCube() {
+      if (score >= 27) {
+        count = 8;
+        opacity = 0.95;
+      } else if (score >= 20) {
+        count = 7;
+        opacity = 0.9;
+      } else if (score >= 14) {
+        count = 6;
+        opacity = 0.85;
+      } else if (score >= 9) {
+        count = 5;
+        opacity = 0.8;
+      } else if (score >= 5) {
+        count = 4;
+        opacity = 0.75;
+      } else if (score >= 2) {
+        count = 3;
+        opacity = 0.7;
+      } else {
+        count = 2;
+      }
+      const total = count ** 2;
+      const randomIndex = Math.floor(Math.random() * total) + 1;
+      const r = Math.floor(Math.random() * 200) + 1;
+      const g = Math.floor(Math.random() * 200) + 1;
+      const b = Math.floor(Math.random() * 200) + 1;
+      const baseColor = `rgb(${r}, ${g}, ${b})`;
+      const lightColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+      let content = '';
+      for (let i = 1; i <= total; i++) {
+        if (i === randomIndex) {
+          content += `<div class="box box-${count}x${count} light-color" style="background-color:${lightColor}"></div>`;
+        } else {
+          content += `<div class="box box-${count}x${count}" style="background-color:${baseColor}"></div>`;
+        }
+      }
+      cubeBox.innerHTML = content;
+      bindAnswerEvent();
+    }
+
+    function bindAnswerEvent() {
+      const lightColor = document.querySelector('.light-color');
+      lightColor.addEventListener('click', function () {
+        score++;
+        scoreValue.textContent = score;
+        createCube();
+      });
+    }
+
+    function time() {
+      timing--;
+      timeValue.textContent = timing;
+      if (timing <= 0) {
+        clearInterval(timerInterval);
+        alert(`時間到，恭喜你獲得 ${score} 分`);
+        location.href = "./js-色辨遊戲終極版開始頁.html";
+      }
+    }
+
+    function togglePause() {
+      const pauseBtn = document.querySelector('.pause-btn');
+      const pauseValue = document.querySelector('.pause-value');
+      const pauseScreen = document.querySelector('#pause-screen');
+      pauseBtn.addEventListener('click', function () {
+        if (isPaused) {
+          // 恢復計時
+          timerInterval = setInterval(time, 1000);
+          pauseValue.textContent = 'PAUSE';
+          pauseScreen.style.display = 'none';
+          cubeBox.classList.remove('no-click');
+        } else {
+          // 暫停計時
+          clearInterval(timerInterval);
+          pauseValue.textContent = 'RESUME';
+          pauseScreen.style.display = 'flex';
+          cubeBox.classList.add('no-click');
+        }
+        isPaused = !isPaused; // 取反當前值並賦值給isPaused
+      });
+    }
+  </script>
+</body>
+
+</html>

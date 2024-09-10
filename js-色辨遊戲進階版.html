@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>色辨遊戲進階版</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      border-radius: 10px;
+    }
+
+    #container {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #F06060;
+      position: relative;
+    }
+
+    #cube-box {
+      width: 500px;
+      height: 500px;
+      background-color: #ddd;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      cursor: pointer;
+      justify-content: space-around;
+      align-content: space-around;
+    }
+
+    .score {
+      width: 150px;
+      height: 50px;
+      background-color: #ddd;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      font-size: 120%;
+      font-weight: bold;
+      border: 2px solid black;
+    }
+
+    p {
+      font-size: 150%;
+    }
+
+    .box-2x2 {
+      width: calc((100% - 20px) / 2);
+      height: calc((100% - 20px) / 2);
+    }
+
+    .box-3x3 {
+      width: calc((100% - 20px) / 3);
+      height: calc((100% - 20px) / 3);
+    }
+
+    .box-4x4 {
+      width: calc((100% - 20px) / 4);
+      height: calc((100% - 20px) / 4);
+    }
+
+    .box-5x5 {
+      width: calc((100% - 20px) / 5);
+      height: calc((100% - 20px) / 5);
+    }
+
+    .box-6x6 {
+      width: calc((100% - 20px) / 6);
+      height: calc((100% - 20px) / 6);
+    }
+
+    .box-7x7 {
+      width: calc((100% - 20px) / 7);
+      height: calc((100% - 20px) / 7);
+    }
+
+    .box-8x8 {
+      width: calc((100% - 20px) / 8);
+      height: calc((100% - 20px) / 8);
+    }
+  </style>
+</head>
+
+<body>
+  <section id="container">
+    <div class="score">
+      <h3> 得分：</h3>
+      <p class="score-value"> 0 </p>
+    </div>
+    <div id="cube-box"></div>
+  </section>
+
+  <script>
+    const cubeBox = document.querySelector('#cube-box');
+    const scoreValue = document.querySelector('.score-value');
+    let score = 0;
+    let count = 2;
+
+    createCube();
+
+    function createCube() {
+      if (score >= 27) {
+        count = 8;
+      } else if (score >= 20) {
+        count = 7;
+      } else if (score >= 14) {
+        count = 6;
+      } else if (score >= 9) {
+        count = 5;
+      } else if (score >= 5) {
+        count = 4;
+      } else if (score >= 2) {
+        count = 3;
+      } else {
+        count = 2;
+      }
+
+      const total = count ** 2;
+      const randomIndex = Math.floor(Math.random() * total) + 1;
+      const r = Math.floor(Math.random() * 200) + 1;
+      const g = Math.floor(Math.random() * 200) + 1;
+      const b = Math.floor(Math.random() * 200) + 1;
+      const baseColor = `rgb(${r}, ${g}, ${b})`;
+      const lightColor = `rgba(${r}, ${g}, ${b}, 80%)`;
+      let content = '';
+      for (let i = 1; i <= total; i++) {
+        if (i === randomIndex) {
+          content += `<div class="box box-${count}x${count} light-color" style="background-color:${lightColor}"></div>`;
+        } else {
+          content += `<div class="box box-${count}x${count}" style="background-color:${baseColor}"></div>`;
+        }
+      }
+      cubeBox.innerHTML = content;
+      bindAnswerEvent();
+    }
+
+    function bindAnswerEvent() {
+      const lightColor = document.querySelector('.light-color');
+      lightColor.addEventListener('click', function () {
+        score++;
+        scoreValue.textContent = score;
+        if (score === 30) {
+          alert('恭喜過關了！');
+          score = 0;
+          createCube();
+        } else {
+          createCube();
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
